@@ -1,8 +1,8 @@
 ---
-- name: Check if Mysql Configured
-      stat:
-        path: /var/tmp/mysqlconfigured
-      register: stat_result
+ - name: Check if Mysql Configured
+   stat:
+     path: /var/tmp/mysqlconfigured
+   register: stat_result
 
  - name: Install the MySQL packages
    apt: name={{ item }} state=installed update_cache=yes
