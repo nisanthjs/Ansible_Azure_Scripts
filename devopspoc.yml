@@ -2,11 +2,10 @@
   hosts: localhost
   connection: local
   tasks:
-  
+
      - name: Check Azure VM Status
        stat:
          path: host_ip.txt
-       register: stat_result
        set_fact: stat_result
 
      - name: Execute the azure VM creation script
