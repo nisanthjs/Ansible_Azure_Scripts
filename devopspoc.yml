@@ -38,7 +38,7 @@
   become: yes
   gather_facts: yes
   roles:
-    - mysql
+    - { role: mysql, when: stat_result.stat.exists == False }
 
 - name: Install Tomcat 
   hosts: azure-vm

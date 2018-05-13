@@ -24,11 +24,6 @@
      - localhost
      - "{{ ansible_hostname }}"
 
- - name: Create a new database with name worldDB
-   mysql_db:
-     name: worldDB
-     state: present
-
  - name: Copy database dump file
    copy:
      src: world.sql
@@ -36,7 +31,7 @@
 
  - name: Restore database
    mysql_db:
-     name: worldDB
+     name: world
      state: import
      target: /tmp/world.sql
 
