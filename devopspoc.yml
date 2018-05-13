@@ -32,10 +32,7 @@
      - name: add host to group azure-vm
        add_host:
           name: "{{ hostIPDet.stdout }}"
-          groups: azure-vm
-
-    - name: Make vars persistant
-      
+          groups: azure-vm     
           
 - name: Install Mysql
   hosts: azure-vm
