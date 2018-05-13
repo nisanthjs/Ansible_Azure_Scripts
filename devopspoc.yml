@@ -2,15 +2,23 @@
   hosts: localhost
   connection: local
   tasks:
+  
+     - name: Check Azure VM Status
+       stat:
+         path: host_ip.txt
+       register: stat_result
+
      - name: Execute the azure VM creation script
        script: create_az_vm.sh
+       when: stat_result.stat.exists == False
 
      - name: Execute the fetch IP script
        script: getazvmip.sh
        register: task_result
        until: task_result.rc == 0
        retries: 3
-       delay: 1
+       delay: 
+       when: stat_result.stat.exists == False
 
      - name: Retrieve Host IP from file
        command: cat "host_ip.txt"
