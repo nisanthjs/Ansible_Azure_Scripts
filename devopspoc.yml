@@ -33,15 +33,12 @@
           name: "{{ hostIPDet.stdout }}"
           groups: azure-vm
 
-     - name: Setting Facts
-       set_fact: stat_result_host=hostvars['localhost']['stat_result']     
-          
 - name: Install Mysql
   hosts: azure-vm
   become: yes
   gather_facts: yes
   roles:
-    - { role: mysql, when: stat_result_host.stat.exists == False }
+    - mysql
 
 - name: Install Tomcat 
   hosts: azure-vm

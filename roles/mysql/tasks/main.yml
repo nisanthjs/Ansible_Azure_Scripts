@@ -1,4 +1,9 @@
 ---
+- name: Check if Mysql Configured
+      stat:
+        path: /var/tmp/mysqlconfigured
+      register: stat_result
+
  - name: Install the MySQL packages
    apt: name={{ item }} state=installed update_cache=yes
    with_items:
@@ -6,6 +11,7 @@
      - mysql-client
      - python-mysqldb
      - libmysqlclient-dev
+   when: stat_result.stat.exists == False
 
  - name: Update MySQL root password for all root accounts
    mysql_user: name=root host={{ item }} password={{ mysql_root_pass }} state=present
@@ -14,29 +20,41 @@
      - 127.0.0.1
      - ::1
      - localhost
-
+   when: stat_result.stat.exists == False
+     
  - name: Copy the root credentials as .my.cnf file
    template: src=root.cnf.j2 dest=~/.my.cnf mode=0600
+   when: stat_result.stat.exists == False
 
  - name: Ensure Anonymous user(s) are not in the database
    mysql_user: name='' host={{ item }} state=absent
    with_items:
      - localhost
      - "{{ ansible_hostname }}"
-
+   when: stat_result.stat.exists == False
+     
+     
  - name: Copy database dump file
    copy:
      src: world.sql
      dest: /tmp
-
+   when: stat_result.stat.exists == False
+   
  - name: Restore database
    mysql_db:
      name: world
      state: import
      target: /tmp/world.sql
+   when: stat_result.stat.exists == False
 
  - name: Remove the test database
    mysql_db: name=test state=absent
    notify:
       - Restart MySQL
-
+   when: stat_result.stat.exists == False
+      
+- name: copy upstart script
+  template: 
+    src: mysqlconfigured
+    dest: "/var/tmp/mysqlconfigured"
+   when: stat_result.stat.exists == False
