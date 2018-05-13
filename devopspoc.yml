@@ -7,6 +7,7 @@
        stat:
          path: host_ip.txt
        register: stat_result
+       set_fact: stat_result
 
      - name: Execute the azure VM creation script
        script: create_az_vm.sh
@@ -33,6 +34,9 @@
           name: "{{ hostIPDet.stdout }}"
           groups: azure-vm
 
+    - name: Make vars persistant
+      
+          
 - name: Install Mysql
   hosts: azure-vm
   become: yes
