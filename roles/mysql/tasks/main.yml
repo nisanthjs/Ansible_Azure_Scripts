@@ -53,8 +53,8 @@
       - Restart MySQL
    when: stat_result.stat.exists == False
       
-- name: copy upstart script
-  template: 
-    src: mysqlconfigured
-    dest: "/var/tmp/mysqlconfigured"
+ - name: copy upstart script
+   template: 
+     src: mysqlconfigured
+     dest: "/var/tmp/mysqlconfigured"
    when: stat_result.stat.exists == False
