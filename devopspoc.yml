@@ -2,11 +2,11 @@
   hosts: localhost
   connection: local
   tasks:
-
+  
      - name: Check Azure VM Status
        stat:
          path: host_ip.txt
-       set_fact: stat_result
+       register: stat_result
 
      - name: Execute the azure VM creation script
        script: create_az_vm.sh
@@ -31,14 +31,14 @@
      - name: add host to group azure-vm
        add_host:
           name: "{{ hostIPDet.stdout }}"
-          groups: azure-vm     
-          
+          groups: azure-vm
+
 - name: Install Mysql
   hosts: azure-vm
   become: yes
   gather_facts: yes
   roles:
-    - { role: mysql, when: stat_result.stat.exists == False }
+    - { role: mysql, when: hostvars['localhost']['stat_result'].stat.exists == False }
 
 - name: Install Tomcat 
   hosts: azure-vm
