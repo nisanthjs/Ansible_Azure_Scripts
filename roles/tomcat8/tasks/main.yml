@@ -1,8 +1,8 @@
 ---
 - name: Check if Tomcat Configured
-   stat:
-     path: /var/tmp/tomcatconfigured
-   register: stat_result
+  stat:
+    path: /var/tmp/tomcatconfigured
+  register: stat_result
 
 - name: Install Java 1.8
   apt: name=openjdk-8-jdk
