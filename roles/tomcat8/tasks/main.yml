@@ -1,50 +1,70 @@
 ---
+- name: Check if Tomcat Configured
+   stat:
+     path: /var/tmp/tomcatconfigured
+   register: stat_result
+
 - name: Install Java 1.8
   apt: name=openjdk-8-jdk
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: add group "tomcat"
   group: name=tomcat
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: add user "tomcat"
   user: name=tomcat group=tomcat home=/usr/share/tomcat createhome=no
   become: True
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: Download Tomcat
   get_url: url=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.8/bin/apache-tomcat-8.5.8.tar.gz dest=/opt/apache-tomcat-8.5.8.tar.gz
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: Extract archive
   command: chdir=/usr/share /bin/tar xvf /opt/apache-tomcat-8.5.8.tar.gz -C /opt/ creates=/opt/apache-tomcat-8.5.8
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: Symlink install directory
   file: src=/opt/apache-tomcat-8.5.8 path=/usr/share/tomcat state=link
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: Change ownership of Tomcat installation
   file: path=/usr/share/tomcat/ owner=tomcat group=tomcat state=directory recurse=yes
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
+- name: Set Tomcat Configuration Status
+  template: 
+    src: tomcatconfigured
+    dest: "/var/tmp/tomcatconfigured"
+  when: stat_result.stat.exists == False
+  
 - name: Configure Tomcat server
   template: src=server.xml dest=/usr/share/tomcat/conf/
   notify: restart tomcat
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: Configure Tomcat users
   template: src=tomcat-users.xml dest=/usr/share/tomcat/conf/
   notify: restart tomcat
   become: yes
   become_method: sudo
+  when: stat_result.stat.exists == False
 
 - name: Install Tomcat init script
   copy: src=tomcat-initscript.sh dest=/etc/init.d/tomcat mode=0755
